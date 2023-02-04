@@ -1,0 +1,29 @@
+{
+    "groups": [
+      {
+        "name": "foo",
+        "type": "com.example.demo.FooProperties",
+        "sourceType": "com.example.demo.FooProperties"
+      },
+      {
+        "name": "foo.bar",
+        "type": "com.example.demo.BarProperties",
+        "sourceType": "com.example.demo.BarProperties"
+      }
+    ],
+    "properties": [
+      {
+        "name": "foo.bar.val",
+        "type": "java.lang.String",
+        "description": "The val of bar!",
+        "sourceType": "com.example.demo.BarProperties",
+        "defaultValue": "huh"
+      },
+      {
+        "name": "foo.val",
+        "type": "java.lang.String",
+        "sourceType": "com.example.demo.FooProperties"
+      }
+    ],
+    "hints": []
+  }

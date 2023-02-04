@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>com.github.cjoseflores</groupId>
+  <artifactId>spring-boot-config-doc-maven-plugin-proper-config-test</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <packaging>jar</packaging>
+  <name>Proper Test of the GenerateDocumentation Mojo</name>
+
+  <properties>
+    <output-dir>target/test-harness/project-to-test</output-dir>
+  </properties>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>com.github.cjoseflores</groupId>
+        <artifactId>spring-boot-config-doc-maven-plugin</artifactId>
+        <configuration>
+          <metadataDirectory>${project.basedir}</metadataDirectory>
+          <outputDirectory>${project.basedir}</outputDirectory>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>
