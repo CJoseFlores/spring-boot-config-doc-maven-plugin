@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.github.cjoseflores;
+package com.github.cjoseflores.docgenerator;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -27,7 +27,6 @@ import java.util.stream.Collectors;
 
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
@@ -87,14 +86,18 @@ public class GenerateDocumentation
     @Parameter(defaultValue = "true", property = "failBuildOnMissingMetadata", required = true)
     private boolean failBuildOnMissingMetadata;
 
-    /**
+    /*
      * TODO: Allow manual markdown to be inserted somewhere in the generated
      * markdown, i.e. perhaps suggest
      * configuration of spring boot starters used by the application?
-     * 
-     * @throws MojoFailureException
      */
-
+    /**
+     * Runs the MOJO
+     * 
+     * @throws MojoExecutionException thrown when the metadata file could not be
+     *                                loaded, and the 'failBuildOnMissingMetadata'
+     *                                field is set.
+     */
     public void execute() throws MojoExecutionException {
         Optional<ConfigurationMetadata> metadataOpt = loadMetadata(
                 new File(metadataDirectory + File.separator + metadataFileName));
@@ -122,9 +125,9 @@ public class GenerateDocumentation
      * @param metadataFile The file holding the spring configuration metadata.
      * @return An {@link Optional} containing a {@link ConfigurationMetadata}
      *         object, or empty if it could not be loaded.
-     * @throws MojoFailureException thrown when the metadata file could not be
-     *                              loaded, and the 'failBuildOnMissingMetadata'
-     *                              field is set.
+     * @throws MojoExecutionException thrown when the metadata file could not be
+     *                                loaded, and the 'failBuildOnMissingMetadata'
+     *                                field is set.
      */
     private Optional<ConfigurationMetadata> loadMetadata(File metadataFile) throws MojoExecutionException {
         JsonMarshaller marshaller = new JsonMarshaller();
