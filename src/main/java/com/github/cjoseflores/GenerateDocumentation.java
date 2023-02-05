@@ -51,7 +51,7 @@ import com.vladsch.flexmark.util.format.TableCell;
  * TODO: Does this phase make sense? We need to make sure to run this AFTER the
  * metadata is generated...
  */
-@Mojo(name = "generate-documentation", defaultPhase = LifecyclePhase.PROCESS_SOURCES)
+@Mojo(name = "generate-documentation", defaultPhase = LifecyclePhase.COMPILE)
 public class GenerateDocumentation
         extends AbstractMojo {
 
