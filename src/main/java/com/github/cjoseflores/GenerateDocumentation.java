@@ -21,7 +21,9 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -191,27 +193,24 @@ public class GenerateDocumentation
         table.addCell(createTableCell("Default"));
         table.setBody();
 
-        // Map<String, ItemHint> propToHint = metadata.getHints().stream()
-        // .collect(Collectors.toMap(hint -> hint.getName(), hint -> hint));
+        Map<String, ItemHint> propToHint = metadata.getHints().stream()
+                .collect(Collectors.toMap(hint -> hint.getName(), hint -> hint));
 
         for (ItemMetadata itemMetadata : metadata.getItems()) {
             if (itemMetadata.isOfItemType(ItemType.GROUP)) {
                 getLog().debug("Found a group item (skipping): " + itemMetadata.toString());
                 continue;
+            }
+
+            // TODO: Implement strikethrough text on deprecated properties?
+            table.addCell(createAnchoredTableCell(itemMetadata.getName()));
+            table.addCell(createTableCell(getDescription(itemMetadata)));
+            table.addCell(createTableCell(itemMetadata.getType()));
+
+            if (propToHint.get(itemMetadata.getName()) != null) {
+                table.addCell(createHintLinkCell(getDefaultValueString(itemMetadata), itemMetadata.getName()));
             } else {
-                // TODO: Implement strikethrough text on deprecated properties?
-                table.addCell(createAnchoredTableCell(itemMetadata.getName()));
-                table.addCell(createTableCell(
-                        itemMetadata.getDescription() != null
-                                ? itemMetadata.getDeprecation() == null
-                                        ? itemMetadata.getDescription()
-                                        : itemMetadata.getDescription() + " (deprecated, use: "
-                                                + itemMetadata.getDeprecation().getReplacement()
-                                                + " instead)"
-                                : ""));
-                table.addCell(createTableCell(itemMetadata.getType()));
-                table.addCell(createTableCell(
-                        itemMetadata.getDefaultValue() != null ? itemMetadata.getDefaultValue().toString() : ""));
+                table.addCell(createTableCell(getDefaultValueString(itemMetadata)));
             }
             table.nextRow();
         }
@@ -235,7 +234,8 @@ public class GenerateDocumentation
             valueHintTable.appendTable(out);
 
             // Write the Markdown, and link hint name to the property
-            markdown.append("### [" + hint.getName() + "](#" + hint.getName() + ")");
+            markdown.append(
+                    "### <a id=\"" + hint.getName() + "-hint\" />[" + hint.getName() + "](#" + hint.getName() + ")");
             markdown.append("\n");
             markdown.append(out.toString());
             markdown.append("\n");
@@ -276,6 +276,20 @@ public class GenerateDocumentation
     }
 
     private TableCell createHintLinkCell(String cellText, String propertyName) {
-        return new TableCell(cellText + " ([hints](###" + propertyName + ")", 1, 1);
+        return new TableCell(cellText + " _\\([hints](#" + propertyName + "-hint)\\)_", 1, 1);
+    }
+
+    private String getDescription(ItemMetadata itemMetadata) {
+        return itemMetadata.getDescription() != null
+                ? itemMetadata.getDeprecation() == null
+                        ? itemMetadata.getDescription()
+                        : itemMetadata.getDescription() + " _(deprecated, use: "
+                                + itemMetadata.getDeprecation().getReplacement()
+                                + " instead)_"
+                : "";
+    }
+
+    private String getDefaultValueString(ItemMetadata itemMetadata) {
+        return itemMetadata.getDefaultValue() != null ? itemMetadata.getDefaultValue().toString() : "";
     }
 }
