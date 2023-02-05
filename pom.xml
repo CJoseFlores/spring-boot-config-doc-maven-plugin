@@ -17,7 +17,10 @@
   <version>0.0.1-SNAPSHOT</version>
   <packaging>maven-plugin</packaging>
 
-  <name>spring-boot-config-doc-maven-plugin Maven Plugin</name>
+  <name>spring-boot-config-doc-maven-plugin</name>
+  <description>Generate documentation from SpringBoot metadata</description>
+  <url>https://github.com/CJoseFlores/spring-boot-config-doc-maven-plugin</url>
+  <inceptionYear>2023</inceptionYear>
 
   <prerequisites>
     <maven>${maven.version}</maven>
@@ -27,8 +30,31 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
+    <maven.compiler.release>11</maven.compiler.release>
     <maven.version>3.3.9</maven.version>
   </properties>
+
+  <developers>
+    <developer>
+      <id>cjoseflores</id>
+      <name>Carlos Jose Flores Jr.</name>
+    </developer>
+  </developers>
+
+  <scm>
+    <connection>scm:git:https://github.com/CJoseFlores/spring-boot-config-doc-maven-plugin.git</connection>
+    <developerConnection>scm:git:https://github.com/CJoseFlores/spring-boot-config-doc-maven-plugin.git</developerConnection>
+    <url>https://github.com/CJoseFlores/spring-boot-config-doc-maven-plugin.git</url>
+    <tag>HEAD</tag>
+  </scm>
+
+  <licenses>
+    <license>
+      <name>Apache-2.0</name>
+      <url>https://www.apache.org/licenses/LICENSE-2.0</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
 
   <dependencies>
     <dependency>
@@ -115,34 +141,73 @@
         </executions>
       </plugin>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-source-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>attach-sources</id>
-            <phase>verify</phase>
-            <goals>
-              <goal>jar-no-fork</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-javadoc-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>attach-javadoc</id>
-            <phase>verify</phase>
-            <goals>
-              <goal>jar</goal>
-            </goals>
-          </execution>
-        </executions>
+        <groupId>org.jreleaser</groupId>
+        <artifactId>jreleaser-maven-plugin</artifactId>
         <configuration>
-          <nohelp>true</nohelp>
+          <jreleaser>
+            <signing>
+              <active>ALWAYS</active>
+              <armored>true</armored>
+            </signing>
+            <deploy>
+              <maven>
+                <nexus2>
+                  <maven-central>
+                    <active>ALWAYS</active>
+                    <url>https://s01.oss.sonatype.org/service/local</url>
+                    <closeRepository>false</closeRepository>
+                    <releaseRepository>false</releaseRepository>
+                    <stagingRepositories>target/staging-deploy</stagingRepositories>
+                  </maven-central>
+                </nexus2>
+              </maven>
+            </deploy>
+          </jreleaser>
         </configuration>
       </plugin>
     </plugins>
   </build>
+  <profiles>
+    <profile>
+      <id>publication</id>
+      <properties>
+        <altDeploymentRepository>local::default::file:./target/staging-deploy</altDeploymentRepository>
+      </properties>
+      <build>
+        <defaultGoal>deploy</defaultGoal>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-javadoc-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>attach-javadocs</id>
+                <goals>
+                  <goal>jar</goal>
+                </goals>
+                <configuration>
+                  <attach>true</attach>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-source-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>attach-sources</id>
+                <goals>
+                  <goal>jar</goal>
+                </goals>
+                <configuration>
+                  <attach>true</attach>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 </project>
