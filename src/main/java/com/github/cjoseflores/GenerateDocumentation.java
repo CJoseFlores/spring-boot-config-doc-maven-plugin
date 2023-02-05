@@ -200,7 +200,7 @@ public class GenerateDocumentation
                 continue;
             } else {
                 // TODO: Implement strikethrough text on deprecated properties?
-                table.addCell(createTableCell(itemMetadata.getName()));
+                table.addCell(createAnchoredTableCell(itemMetadata.getName()));
                 table.addCell(createTableCell(
                         itemMetadata.getDescription() != null
                                 ? itemMetadata.getDeprecation() == null
@@ -234,8 +234,8 @@ public class GenerateDocumentation
             MarkdownTable valueHintTable = createHintValueTable(hint);
             valueHintTable.appendTable(out);
 
-            // Write the Markdown
-            markdown.append("### " + hint.getName() + "");
+            // Write the Markdown, and link hint name to the property
+            markdown.append("### [" + hint.getName() + "](#" + hint.getName() + ")");
             markdown.append("\n");
             markdown.append(out.toString());
             markdown.append("\n");
