@@ -30,6 +30,8 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.springframework.boot.configurationprocessor.metadata.ConfigurationMetadata;
+import org.springframework.boot.configurationprocessor.metadata.ItemHint;
+import org.springframework.boot.configurationprocessor.metadata.ItemHint.ValueHint;
 import org.springframework.boot.configurationprocessor.metadata.ItemMetadata;
 import org.springframework.boot.configurationprocessor.metadata.ItemMetadata.ItemType;
 import org.springframework.boot.configurationprocessor.metadata.JsonMarshaller;
@@ -147,18 +149,29 @@ public class GenerateDocumentation
      */
     private String buildMarkdownString(ConfigurationMetadata metadata) {
         HtmlWriter out = new HtmlWriter(0, HtmlWriter.F_FORMAT_ALL);
-        String documentHeader = "# " + generatedDocumentationHeader;
-        String tableHeader = "## Properties";
+
+        // Create markdown tables
+        createTable(metadata).appendTable(out);
+        String propertyTableMarkdown = out.toString();
+        String hintTablesMarkdown = createMarkdownHintTables(metadata);
 
         // Write this out
         // TODO: Figure out if we can leverage the HTMLWriter to add the header?
-        createTable(metadata).appendTable(out);
+
         StringBuilder finalMarkdown = new StringBuilder();
-        finalMarkdown.append(documentHeader);
+        finalMarkdown.append("# " + generatedDocumentationHeader);
         finalMarkdown.append("\n\n");
-        finalMarkdown.append(tableHeader);
+        finalMarkdown.append("## Properties");
         finalMarkdown.append("\n");
-        finalMarkdown.append(out.toString());
+        finalMarkdown.append(propertyTableMarkdown);
+        finalMarkdown.append("\n");
+
+        if (!hintTablesMarkdown.isEmpty()) {
+            finalMarkdown.append("## Hints");
+            finalMarkdown.append("\n");
+            finalMarkdown.append(hintTablesMarkdown);
+        }
+
         return finalMarkdown.toString();
     }
 
@@ -178,21 +191,21 @@ public class GenerateDocumentation
         table.addCell(createTableCell("Default"));
         table.setBody();
 
+        // Map<String, ItemHint> propToHint = metadata.getHints().stream()
+        // .collect(Collectors.toMap(hint -> hint.getName(), hint -> hint));
+
         for (ItemMetadata itemMetadata : metadata.getItems()) {
             if (itemMetadata.isOfItemType(ItemType.GROUP)) {
-                getLog().info("Found a group item (skipping): " + itemMetadata.toString());
+                getLog().debug("Found a group item (skipping): " + itemMetadata.toString());
                 continue;
             } else {
                 // TODO: Implement strikethrough text on deprecated properties?
-                table.addCell(createTableCell(
-                        itemMetadata.getDeprecation() == null
-                                ? itemMetadata.getName()
-                                : itemMetadata.getName() + " (deprecated)"));
+                table.addCell(createTableCell(itemMetadata.getName()));
                 table.addCell(createTableCell(
                         itemMetadata.getDescription() != null
                                 ? itemMetadata.getDeprecation() == null
                                         ? itemMetadata.getDescription()
-                                        : itemMetadata.getDescription() + " (use: "
+                                        : itemMetadata.getDescription() + " (deprecated, use: "
                                                 + itemMetadata.getDeprecation().getReplacement()
                                                 + " instead)"
                                 : ""));
@@ -207,7 +220,62 @@ public class GenerateDocumentation
         return table;
     }
 
+    /**
+     * Creates a markdown formatted string that includes all hint tables.
+     * 
+     * @param metadata {@link ConfigurationMetadata}.
+     * @return A String.
+     */
+    private String createMarkdownHintTables(ConfigurationMetadata metadata) {
+        StringBuilder markdown = new StringBuilder();
+
+        for (ItemHint hint : metadata.getHints()) {
+            HtmlWriter out = new HtmlWriter(0, HtmlWriter.F_FORMAT_ALL);
+            MarkdownTable valueHintTable = createHintValueTable(hint);
+            valueHintTable.appendTable(out);
+
+            // Write the Markdown
+            markdown.append("### " + hint.getName() + "");
+            markdown.append("\n");
+            markdown.append(out.toString());
+            markdown.append("\n");
+        }
+
+        return markdown.toString();
+    }
+
+    /**
+     * Creates a markdown table of a single hint's values.
+     * 
+     * @param hint An {@link ItemHint}.
+     * @return A {@link MarkdownTable}.
+     */
+    private MarkdownTable createHintValueTable(ItemHint hint) {
+        MarkdownTable table = new MarkdownTable("", new MutableDataSet());
+        table.setHeader();
+        table.addCell(createTableCell("Value"));
+        table.addCell(createTableCell("Description"));
+        table.setBody();
+
+        for (ValueHint value : hint.getValues()) {
+            table.addCell(createTableCell(value.getValue() != null ? value.getValue().toString() : ""));
+            table.addCell(createTableCell(value.getDescription() != null ? value.getDescription() : ""));
+            table.nextRow();
+        }
+
+        table.fillMissingColumns();
+        return table;
+    }
+
     private TableCell createTableCell(String cellName) {
         return new TableCell(cellName, 1, 1);
+    }
+
+    private TableCell createAnchoredTableCell(String cellText) {
+        return new TableCell("<a id=\"" + cellText + "\">" + cellText + "</a>", 1, 1);
+    }
+
+    private TableCell createHintLinkCell(String cellText, String propertyName) {
+        return new TableCell(cellText + " ([hints](###" + propertyName + ")", 1, 1);
     }
 }
