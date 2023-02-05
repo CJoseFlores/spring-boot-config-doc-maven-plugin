@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.github.cjoseflores.docgenerator;
+package io.github.cjoseflores.docgenerator;
 
 import java.io.File;
 import java.io.FileInputStream;

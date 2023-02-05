@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.github.cjoseflores.docgenerator;
+package io.github.cjoseflores.docgenerator;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;

@@ -8,7 +8,7 @@ The purpose of doing so is for developers to easily distribute their configurabl
 
 You can easily generate the documentation for your project with one command:
 ```shell
-mvn compile com.github.cjoseflores:spring-boot-config-doc-maven-plugin:generate-documentation
+mvn compile io.github.cjoseflores:spring-boot-config-doc-maven-plugin:generate-documentation
 ```
 This generates a markdown file under `${build.project.directory}`. Note that this also assumes your `spring-configuration-metadata.json` is located in `${project.build.outputDirectory}/META-INF`. To point to a different file, use the `-DmetadataDirectory` flag.
 
@@ -22,7 +22,7 @@ In your Maven project, add the following to your `pom.xml`:
         <plugins>
             ...
             <plugin>
-                <groupId>com.github.cjoseflores</groupId>
+                <groupId>io.github.cjoseflores</groupId>
                 <artifactId>spring-boot-config-doc-maven-plugin</artifactId>
                 <version>${version}</version>
                 <executions>

@@ -4,7 +4,7 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>com.github.cjoseflores</groupId>
+  <groupId>io.github.cjoseflores</groupId>
   <artifactId>spring-boot-config-doc-maven-plugin-missing-skip-config-test</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <packaging>jar</packaging>
@@ -13,7 +13,7 @@
   <build>
     <plugins>
       <plugin>
-        <groupId>com.github.cjoseflores</groupId>
+        <groupId>io.github.cjoseflores</groupId>
         <artifactId>spring-boot-config-doc-maven-plugin</artifactId>
         <configuration>
           <metadataDirectory>${project.basedir}</metadataDirectory>
