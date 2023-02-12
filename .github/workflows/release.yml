@@ -28,6 +28,7 @@ jobs:
           git commit -a -m "Releasing version $VERSION"
           git push origin main
   release:
+    name: Release
     needs: [ precheck ]
     runs-on: ubuntu-latest
     steps:
@@ -53,3 +54,20 @@ jobs:
           JRELEASER_NEXUS2_USERNAME: ${{ secrets.JRELEASER_NEXUS2_USERNAME }}
           JRELEASER_NEXUS2_PASSWORD: ${{ secrets.JRELEASER_NEXUS2_PASSWORD }}
         run: mvn -B jreleaser:full-release --file pom.xml
+  next-version:
+    name: Set Next Development Version
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Set Next Version
+        shell: bash
+        run: |
+          mvn -B versions:set versions:commit -DnextSnapshot=true
+          VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "GitHub Action"
+          git commit -a -m "Next development version ($VERSION)"
+          git push origin main

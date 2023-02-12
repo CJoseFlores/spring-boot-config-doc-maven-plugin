@@ -143,6 +143,7 @@
       <plugin>
         <groupId>org.jreleaser</groupId>
         <artifactId>jreleaser-maven-plugin</artifactId>
+        <version>1.4.0</version>
         <configuration>
           <jreleaser>
             <signing>
