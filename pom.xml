@@ -14,7 +14,7 @@
 
   <groupId>io.github.cjoseflores</groupId>
   <artifactId>spring-boot-config-doc-maven-plugin</artifactId>
-  <version>0.1.0</version>
+  <version>0.1.1-SNAPSHOT</version>
   <packaging>maven-plugin</packaging>
 
   <name>spring-boot-config-doc-maven-plugin</name>
