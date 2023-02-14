@@ -62,4 +62,4 @@ The following table describes all configuration options:
 |failBuildOnMissingMetadata|boolean|`true`|Whether or not to fail the build if the 'spring-configuration-metadata' file cannot be loaded, or does not exist.|
 
 ## Artifact Publication
-All artifact are published to maven central.
+All artifacts are published to maven central.
