@@ -10,7 +10,16 @@ You can easily generate the documentation for your project with one command:
 ```shell
 mvn compile io.github.cjoseflores:spring-boot-config-doc-maven-plugin:generate-documentation
 ```
-This generates a markdown file under `${build.project.directory}`. Note that this also assumes your `spring-configuration-metadata.json` is located in `${project.build.outputDirectory}/META-INF`. To point to a different file, use the `-DmetadataDirectory` flag.
+This generates a markdown file under `${build.project.directory}`. Note that this also assumes your `spring-configuration-metadata.json` is located in `${project.build.outputDirectory}/META-INF`.
+
+To point to a different input file, use the `-DmetadataDirectory` flag, or to output to a different directory, use the `-DoutputDirectory` flag.
+
+**Example**:
+```shell
+mvn compile io.github.cjoseflores:spring-boot-config-doc-maven-plugin:generate-documentation -DmetadataDirectory=./metadata -DoutputDirectory=./docs
+```
+
+The above example generates markdown in the `./docs` folder from the file `./metadata/spring-configuration-metadata.json`.
 
 ## Setup
 
@@ -42,7 +51,7 @@ In your Maven project, add the following to your `pom.xml`:
 ```
 
 ## Configuration
-Other than the phase and the markdown output directory, most defaults should be sufficient. Should you require it however, the following table describes all configuration options:
+The following table describes all configuration options:
 |Field|Type|Default|Description|
 |-|-|-|-|
 |metadataDirectory|string|`${project.build.outputDirectory}/META-INF`|Location of the 'spring-configuration-metadata' file.|
@@ -51,3 +60,6 @@ Other than the phase and the markdown output directory, most defaults should be 
 |generatedFileName|string|`${project.artifactId}-spring-properties.md`|The name of the generated markdown file.|
 |generatedDocumentationHeader|string|`${project.artifactId} Spring Properties`|The name value for the documentation header (# in markdown).|
 |failBuildOnMissingMetadata|boolean|`true`|Whether or not to fail the build if the 'spring-configuration-metadata' file cannot be loaded, or does not exist.|
+
+## Artifact Publication
+All artifact are published to maven central.
