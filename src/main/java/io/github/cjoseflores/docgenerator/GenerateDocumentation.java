@@ -102,7 +102,7 @@ public class GenerateDocumentation
         Optional<ConfigurationMetadata> metadataOpt = loadMetadata(
                 new File(metadataDirectory + File.separator + metadataFileName));
 
-        if (metadataOpt.isEmpty()) {
+        if (!metadataOpt.isPresent()) {
             getLog().warn("No configuration file loaded, skipping documentation generation!");
             return;
         }
@@ -112,7 +112,7 @@ public class GenerateDocumentation
         try {
             // TODO: Should we make this directory if it isn't created? It should work as
             // long as defaults are set...
-            Files.writeString(Paths.get(outputDirectory + File.separator + generatedFileName), markdownRepresentation);
+            Files.write(Paths.get(outputDirectory + File.separator + generatedFileName), markdownRepresentation.getBytes());
         } catch (IOException e) {
             getLog().error("Unable to generate documentation! ", e);
         }
