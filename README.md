@@ -59,7 +59,7 @@ The following table describes all configuration options:
 |outputDirectory|string|`${project.build.directory}`|Location to place the generated markdown file.|
 |generatedFileName|string|`${project.artifactId}-spring-properties.md`|The name of the generated markdown file.|
 |generatedDocumentationHeader|string|`${project.artifactId} Spring Properties`|The name value for the documentation header (# in markdown).|
-|failBuildOnMissingMetadata|boolean|`true`|Whether or not to fail the build if the 'spring-configuration-metadata' file cannot be loaded, or does not exist.|
+|failBuildOnMissingMetadata|boolean|`true`|Whether to fail the build if the 'spring-configuration-metadata' file cannot be loaded, or does not exist.|
 
 ## Artifact Publication
 All artifacts are published to maven central.

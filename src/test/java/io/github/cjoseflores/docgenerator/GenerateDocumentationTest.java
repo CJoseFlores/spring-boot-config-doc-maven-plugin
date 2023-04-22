@@ -16,30 +16,19 @@
 
 package io.github.cjoseflores.docgenerator;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
 import java.io.File;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.testing.MojoRule;
+import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+
+import static org.junit.Assert.*;
 
 public class GenerateDocumentationTest {
     @Rule
-    public MojoRule rule = new MojoRule() {
-        @Override
-        protected void before() throws Throwable {
-        }
-
-        @Override
-        protected void after() {
-        }
-    };
-    @Rule
-    public ExpectedException exceptionRule = ExpectedException.none();
+    public final MojoRule rule = new MojoRule();
 
     @Test
     public void testFullGeneration()
@@ -70,9 +59,15 @@ public class GenerateDocumentationTest {
         assertNotNull(metadataFileName);
 
         String metadataAbsolutePath = new File(metadataDirectory + File.separator + metadataFileName).getAbsolutePath();
-        exceptionRule.expect(MojoExecutionException.class);
-        exceptionRule.expectMessage("Could not load the spring configuration file '" + metadataAbsolutePath + "'!");
-        myMojo.execute();
+        String expectedMessage = String.format("Could not load the spring configuration file '%s'!", metadataAbsolutePath);
+        MojoExecutionException exception = Assert.assertThrows(
+                "Expected to fail loading metadata!",
+                MojoExecutionException.class,
+                myMojo::execute);
+        assertEquals(
+                "Exception message for failing to load does not match!",
+                expectedMessage,
+                exception.getMessage());
     }
 
     @Test
