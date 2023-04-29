@@ -4,7 +4,7 @@ name: Maven Verify
 
 on:
   push:
-    branches: [ "main", "feature/*" ]
+    branches: [ "*" ]
   pull_request:
     branches: [ "main" ]
 
