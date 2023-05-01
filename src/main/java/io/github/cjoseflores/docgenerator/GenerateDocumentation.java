@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
@@ -50,6 +51,7 @@ import com.vladsch.flexmark.util.format.TableCell;
  * TODO: Does this phase make sense? We need to make sure to run this AFTER the
  * metadata is generated...
  */
+@Slf4j
 @Mojo(name = "generate-documentation", defaultPhase = LifecyclePhase.COMPILE)
 public class GenerateDocumentation
         extends AbstractMojo {
@@ -82,9 +84,17 @@ public class GenerateDocumentation
     /**
      * Whether to fail the build if the 'spring-configuration-metadata' file
      * cannot be loaded, or does not exist.
+     * @deprecated Use {@link GenerateDocumentation#failOnError} instead. Currently, overridden by
+     * {@link GenerateDocumentation#failOnError} when set to false.
      */
-    @Parameter(defaultValue = "true", property = "failBuildOnMissingMetadata", required = true)
+    @Parameter(defaultValue = "true", property = "failBuildOnMissingMetadata")
     private boolean failBuildOnMissingMetadata;
+    /**
+     * Whether to fail the build if any errors occur during plugin execution. Currently, overridden by
+     * {@link GenerateDocumentation#failBuildOnMissingMetadata} when set to false.
+     */
+    @Parameter(defaultValue = "true", property = "failOnError")
+    private boolean failOnError;
 
     /*
      * TODO: Allow manual markdown to be inserted somewhere in the generated
@@ -136,9 +146,16 @@ public class GenerateDocumentation
             return Optional.of(marshaller.read(metadataInputStream));
         } catch (Exception e) {
             String errorMsg = "Could not load the spring configuration file '" + metadataFile.getAbsolutePath() + "'!";
-            if (failBuildOnMissingMetadata) {
+
+            // TODO: Remove usage of failBuildOnMissingMetadata
+            if (!failBuildOnMissingMetadata || !failOnError) {
+                failBuildOnMissingMetadata = false;
+                failOnError = false;
+            }
+            if(failOnError){
                 throw new MojoExecutionException(errorMsg, e);
             }
+
             getLog().error(errorMsg);
             return Optional.empty();
         }
