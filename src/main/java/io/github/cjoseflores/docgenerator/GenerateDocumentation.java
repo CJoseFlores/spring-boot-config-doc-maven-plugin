@@ -82,16 +82,7 @@ public class GenerateDocumentation
     @Parameter(defaultValue = "${project.artifactId} Spring Properties", property = "generatedDocumentationHeader", required = true)
     private String generatedDocumentationHeader;
     /**
-     * Whether to fail the build if the 'spring-configuration-metadata' file
-     * cannot be loaded, or does not exist.
-     * @deprecated Use {@link GenerateDocumentation#failOnError} instead. Currently, overridden by
-     * {@link GenerateDocumentation#failOnError} when set to false.
-     */
-    @Parameter(defaultValue = "true", property = "failBuildOnMissingMetadata")
-    private boolean failBuildOnMissingMetadata;
-    /**
-     * Whether to fail the build if any errors occur during plugin execution. Currently, overridden by
-     * {@link GenerateDocumentation#failBuildOnMissingMetadata} when set to false.
+     * Whether to fail the build if any errors occur during plugin execution.
      */
     @Parameter(defaultValue = "true", property = "failOnError")
     private boolean failOnError;
@@ -146,16 +137,9 @@ public class GenerateDocumentation
             return Optional.of(marshaller.read(metadataInputStream));
         } catch (Exception e) {
             String errorMsg = "Could not load the spring configuration file '" + metadataFile.getAbsolutePath() + "'!";
-
-            // TODO: Remove usage of failBuildOnMissingMetadata
-            if (!failBuildOnMissingMetadata || !failOnError) {
-                failBuildOnMissingMetadata = false;
-                failOnError = false;
-            }
             if(failOnError){
                 throw new MojoExecutionException(errorMsg, e);
             }
-
             getLog().error(errorMsg);
             return Optional.empty();
         }

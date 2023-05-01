@@ -59,8 +59,7 @@ The following table describes all configuration options:
 |outputDirectory|string|`${project.build.directory}`|Location to place the generated markdown file.|
 |generatedFileName|string|`${project.artifactId}-spring-properties.md`|The name of the generated markdown file.|
 |generatedDocumentationHeader|string|`${project.artifactId} Spring Properties`|The name value for the documentation header (# in markdown).|
-|failOnError|boolean|`true`|Whether to fail the build if any errors occur during plugin execution. *(Note: When `failBuildOnMissingMetadata` is set to false, this property is currently overridden to false)*|
-|failBuildOnMissingMetadata|boolean|`true`|**Deprecated, use `failOnError` instead**. Whether to fail the build if the 'spring-configuration-metadata' file cannot be loaded, or does not exist. *(Note: When `failOnError` is set to false, this property is now overridden to false)*|
+|failOnError|boolean|`true`|Whether to fail the build if any errors occur during plugin execution.|
 
 ## Artifact Publication
 All artifacts are published to maven central.
