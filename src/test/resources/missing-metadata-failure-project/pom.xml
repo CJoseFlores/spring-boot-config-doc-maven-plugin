@@ -17,7 +17,7 @@
         <artifactId>spring-boot-config-doc-maven-plugin</artifactId>
         <configuration>
           <metadataDirectory>${project.basedir}</metadataDirectory>
-          <failBuildOnMissingMetadata>true</failBuildOnMissingMetadata>
+          <failOnError>true</failOnError>
         </configuration>
       </plugin>
     </plugins>
