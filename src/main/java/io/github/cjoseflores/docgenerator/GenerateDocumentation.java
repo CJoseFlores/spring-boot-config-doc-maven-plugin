@@ -19,8 +19,11 @@ package io.github.cjoseflores.docgenerator;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -82,6 +85,11 @@ public class GenerateDocumentation
     @Parameter(defaultValue = "${project.artifactId} Spring Properties", property = "generatedDocumentationHeader", required = true)
     private String generatedDocumentationHeader;
     /**
+     * The paths to extra markdown files that will be merged with the generated spring configuration markdown.
+     */
+    @Parameter(property = "extraMarkdownFilePaths")
+    private List<String> extraMarkdownFilePaths = new ArrayList<>();
+    /**
      * Whether to fail the build if any errors occur during plugin execution.
      */
     @Parameter(defaultValue = "true", property = "failOnError")
@@ -108,7 +116,7 @@ public class GenerateDocumentation
             return;
         }
 
-        String markdownRepresentation = buildMarkdownString(metadataOpt.get());
+        String markdownRepresentation = buildMarkdownString(metadataOpt.get()) + loadExtraMarkdown();
 
         try {
             // TODO: Should we make this directory if it isn't created? It should work as
@@ -143,6 +151,30 @@ public class GenerateDocumentation
             getLog().error(errorMsg);
             return Optional.empty();
         }
+    }
+
+    /**
+     * Loads any extra markdown files passed in by the user and merges them into a single String containing all the
+     * content.
+     *
+     * @return A String representing a merged view of all the extra markdown files.
+     */
+    private String loadExtraMarkdown() {
+        StringBuilder fullMarkDownStrBuilder = new StringBuilder();
+        extraMarkdownFilePaths
+                .stream()
+                .map(File::new)
+                .map(file -> {
+                    try {
+                        return com.google.common.io.Files.asCharSource(file, Charset.defaultCharset()).read();
+                    } catch (IOException e) {
+                        log.error("Unable to read file '{}'! Skipping...", file.getAbsolutePath());
+                        return "";
+                    }
+                })
+                .forEach(markDownString -> fullMarkDownStrBuilder.append(markDownString).append("\n"));
+
+        return fullMarkDownStrBuilder.toString();
     }
 
     /**

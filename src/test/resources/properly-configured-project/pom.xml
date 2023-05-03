@@ -22,6 +22,7 @@
         <configuration>
           <metadataDirectory>${project.basedir}</metadataDirectory>
           <outputDirectory>${project.basedir}</outputDirectory>
+          <extraMarkdownFilePaths>${project.basedir}/extra-markdown.md</extraMarkdownFilePaths>
         </configuration>
       </plugin>
     </plugins>
